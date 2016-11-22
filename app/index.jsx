@@ -1,0 +1,1 @@
+var MyTitle = require('./App')
