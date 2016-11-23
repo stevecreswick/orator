@@ -1,37 +1,33 @@
-var webpack = require('webpack');
-var path = require('path');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var CleanWebpackPlugin = require('clean-webpack-plugin');
+const webpack = require( 'webpack' );
+const path = require( 'path' );
+const CleanWebpackPlugin = require( 'clean-webpack-plugin' );
+
+const merge = require( 'webpack-merge' )
+const validate = require( 'webpack-validator' );
+
+const parts = require( './libs/parts' );
 
 const PATHS = {
-  app: path.join(__dirname, 'app'),
-  build: path.join(__dirname, 'public')
+  app: path.join( __dirname, 'app' ),
+  build: path.join( __dirname, 'public' )
 };
 
-module.exports = {
+const common = {
   context: __dirname,
   entry: {
     app: PATHS.app
   },
-  // entry: './js/App.jsx',
   output: {
     path: PATHS.build,
     filename: '[name].js'
   },
   resolve: {
-    moduleDirectories: ['node_modules', 'js'],
     extensions: ['', '.js', '.jsx', '.json']
   },
   stats: {
     colors: true,
     reasons: true,
     chunks: false
-  },
-  plugins: [
-    new ExtractTextPlugin('[name].css'),
-  ],
-  sassLoader: {
-    includePaths: [path.resolve(__dirname, "./styles")]
   },
   module: {
     loaders: [
@@ -42,14 +38,44 @@ module.exports = {
       {
         test: /\.json$/,
         loader: 'json-loader'
-      },
-      {
-        test: /\.scss$/,
-        loader:  ExtractTextPlugin.extract(
-          'style-loader',
-          'css-loader!sass-loader'
-        )
       }
     ]
   }
 }
+
+var config;
+
+// Detect how npm is run and branch based on that
+switch( process.env.npm_lifecycle_event ) {
+  case 'build':
+    config = merge(
+      common,
+      {
+        devtool: 'source-map'
+      },
+
+      parts.setFreeVariable(
+        'process.env.NODE_ENV',
+        'production'
+      ),
+
+      parts.minify(),
+      parts.setupCSS( PATHS.app )
+    );
+    break;
+  default:
+    config = merge(
+      common,
+      {
+        devtool: 'eval-source-map'
+      },
+      parts.devServer({
+        host: process.env.HOST,
+        port: process.env.PORT
+      }),
+      parts.setupCSS( PATHS.app ),
+      {}
+    )
+}
+
+module.exports = validate( config );
