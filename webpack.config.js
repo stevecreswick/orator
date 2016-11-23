@@ -27,7 +27,7 @@ const common = {
     extensions: ['', '.js', '.jsx', '.json']
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin( 'vendor', 'vendor.js' )
+    new webpack.optimize.CommonsChunkPlugin( { names: [ 'vendor', 'manifest' ] } )
   ],
   stats: {
     colors: true,
