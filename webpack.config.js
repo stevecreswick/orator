@@ -1,6 +1,7 @@
 const webpack = require( 'webpack' );
 const path = require( 'path' );
 const CleanWebpackPlugin = require( 'clean-webpack-plugin' );
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const merge = require( 'webpack-merge' )
 const validate = require( 'webpack-validator' );
@@ -10,6 +11,7 @@ const package = require('./package.json');
 
 const PATHS = {
   app: path.join( __dirname, 'app' ),
+  style: path.join(__dirname, 'app/styles/', 'main.scss'),
   build: path.join( __dirname, 'public' )
 };
 
@@ -17,17 +19,21 @@ const common = {
   context: __dirname,
   entry: {
     app: PATHS.app,
+    style: PATHS.style,
     vendor: Object.keys( package.dependencies )
   },
-  output: {
-    path: PATHS.build,
-    filename: '[name].js'
-  },
+  // output: {
+  //   path: PATHS.build,
+  //   filename: '[name].js'
+  // },
   resolve: {
     extensions: ['', '.js', '.jsx', '.json']
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin( { names: [ 'vendor', 'manifest' ] } )
+    new webpack.optimize.CommonsChunkPlugin( { names: [ 'vendor', 'manifest' ] } ),
+    new HtmlWebpackPlugin({
+      title: 'Orator'
+    })
   ],
   stats: {
     colors: true,
@@ -52,12 +58,24 @@ var config;
 
 // Detect how npm is run and branch based on that
 switch( process.env.npm_lifecycle_event ) {
+
   case 'build':
+  case 'stats':
     config = merge(
       common,
       {
-        devtool: 'source-map'
+        devtool: 'source-map',
+        output: {
+          path: PATHS.build,
+          filename: '[name].[chunkhash].js',
+          // This is used for require.ensure. The setup
+          // will work without but this is useful to set.
+          chunkFilename: '[chunkhash].js'
+        }
       },
+
+      parts.clean( PATHS.build ),
+
 
       // parts.extractBundle({
       //   name: 'vendor',
@@ -70,7 +88,8 @@ switch( process.env.npm_lifecycle_event ) {
       ),
 
       // parts.minify(),
-      parts.setupCSS( PATHS.app )
+      parts.extractCSS( PATHS.style ),
+      parts.purifyCSS([PATHS.app])
     );
     break;
   default:
@@ -83,9 +102,11 @@ switch( process.env.npm_lifecycle_event ) {
         host: process.env.HOST,
         port: process.env.PORT
       }),
-      parts.setupCSS( PATHS.app ),
+      parts.setupCSS( PATHS.style ),
       {}
     )
 }
 
-module.exports = validate( config );
+module.exports = validate( config, {
+  quiet: true
+});

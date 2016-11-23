@@ -1,4 +1,3 @@
 // (File) Manifest Destiny
 
-require('./js/App');
-require('./styles/main.scss');
+var app = require('./js/App');

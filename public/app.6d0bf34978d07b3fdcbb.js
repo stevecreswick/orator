@@ -1,4 +1,4 @@
-webpackJsonp([0],{
+webpackJsonp([0,3],{
 
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
@@ -7,8 +7,7 @@ webpackJsonp([0],{
 	
 	// (File) Manifest Destiny
 	
-	__webpack_require__(1);
-	__webpack_require__(168);
+	var app = __webpack_require__(1);
 
 /***/ },
 
@@ -62,14 +61,7 @@ webpackJsonp([0],{
 	
 	module.exports = MyTitle;
 
-/***/ },
-
-/***/ 168:
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-
 /***/ }
 
 });
-//# sourceMappingURL=app.js.map
+//# sourceMappingURL=app.6d0bf34978d07b3fdcbb.js.map
