@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require( 'webpack-merge' )
 const validate = require( 'webpack-validator' );
 
-const parts = require( './config/webpack/parts' );
+const parts = require( './build/webpack/parts' );
 const package = require('./package.json');
 
 const PATHS = {
@@ -46,7 +46,7 @@ const common = {
         loader: 'handlebars',
         query: {
           helperDirs: [
-            path.join( __dirname, 'config', 'helpers' )
+            path.join( __dirname, 'build', 'helpers' )
           ]
         }
       },
@@ -56,7 +56,7 @@ const common = {
     new webpack.optimize.CommonsChunkPlugin( { names: [ 'vendor', 'manifest' ] } ),
     new HtmlWebpackPlugin({
       title: 'Orator',
-      template: './config/index.handlebars'
+      template: './build/index.handlebars'
     })
   ],
 }
