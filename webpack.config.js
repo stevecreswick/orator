@@ -6,6 +6,7 @@ const merge = require( 'webpack-merge' )
 const validate = require( 'webpack-validator' );
 
 const parts = require( './libs/parts' );
+const package = require('./package.json');
 
 const PATHS = {
   app: path.join( __dirname, 'app' ),
@@ -15,7 +16,8 @@ const PATHS = {
 const common = {
   context: __dirname,
   entry: {
-    app: PATHS.app
+    app: PATHS.app,
+    vendor: Object.keys( package.dependencies )
   },
   output: {
     path: PATHS.build,
@@ -24,6 +26,9 @@ const common = {
   resolve: {
     extensions: ['', '.js', '.jsx', '.json']
   },
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin( 'vendor', 'vendor.js' )
+  ],
   stats: {
     colors: true,
     reasons: true,
@@ -54,12 +59,17 @@ switch( process.env.npm_lifecycle_event ) {
         devtool: 'source-map'
       },
 
+      // parts.extractBundle({
+      //   name: 'vendor',
+      //   entries: Object.keys( package.dependencies )
+      // }),
+
       parts.setFreeVariable(
         'process.env.NODE_ENV',
         'production'
       ),
 
-      parts.minify(),
+      // parts.minify(),
       parts.setupCSS( PATHS.app )
     );
     break;
