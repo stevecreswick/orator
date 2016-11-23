@@ -29,12 +29,6 @@ const common = {
   resolve: {
     extensions: ['', '.js', '.jsx', '.json']
   },
-  plugins: [
-    new webpack.optimize.CommonsChunkPlugin( { names: [ 'vendor', 'manifest' ] } ),
-    new HtmlWebpackPlugin({
-      title: 'Orator'
-    })
-  ],
   stats: {
     colors: true,
     reasons: true,
@@ -49,9 +43,20 @@ const common = {
       {
         test: /\.json$/,
         loader: 'json-loader'
-      }
+      },
+      {
+        test: /\.hbs$/,
+        loader: 'handlebars'
+      },
     ]
-  }
+  },
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin( { names: [ 'vendor', 'manifest' ] } ),
+    new HtmlWebpackPlugin({
+      title: 'Orator',
+      template: './index.html'
+    })
+  ],
 }
 
 var config;
