@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require( 'webpack-merge' )
 const validate = require( 'webpack-validator' );
 
-const parts = require( './libs/parts' );
+const parts = require( './config/webpack/parts' );
 const package = require('./package.json');
 
 const PATHS = {
@@ -22,10 +22,6 @@ const common = {
     style: PATHS.style,
     vendor: Object.keys( package.dependencies )
   },
-  // output: {
-  //   path: PATHS.build,
-  //   filename: '[name].js'
-  // },
   resolve: {
     extensions: ['', '.js', '.jsx', '.json']
   },
@@ -38,15 +34,21 @@ const common = {
     loaders: [
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader'
+        loaders: ['babel?cacheDirectory'],
+        include: PATHS.app
       },
       {
         test: /\.json$/,
         loader: 'json-loader'
       },
       {
-        test: /\.hbs$/,
-        loader: 'handlebars'
+        test: /\.handlebars$/,
+        loader: 'handlebars',
+        query: {
+          helperDirs: [
+            path.join( __dirname, 'config', 'helpers' )
+          ]
+        }
       },
     ]
   },
@@ -54,7 +56,7 @@ const common = {
     new webpack.optimize.CommonsChunkPlugin( { names: [ 'vendor', 'manifest' ] } ),
     new HtmlWebpackPlugin({
       title: 'Orator',
-      template: './index.html'
+      template: './config/index.handlebars'
     })
   ],
 }
